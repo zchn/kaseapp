@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmos Hub Account Manager - Demo Mode</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌌 Cosmos Hub Account Manager</h1>
+            <p>Demo Mode - Account Creation & Staking Simulation</p>
+            <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-top: 10px;">
+                <strong>⚠️ Demo Mode:</strong> This is a demonstration version that simulates Cosmos Hub functionality.
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Account Creation Section -->
+            <section class="card" id="account-section">
+                <h2>Account Creation</h2>
+                <div class="form-group">
+                    <label for="account-name">Account Name:</label>
+                    <input type="text" id="account-name" placeholder="Enter account name" value="my-cosmos-account">
+                </div>
+                <button id="create-account-btn" class="btn btn-primary">
+                    Create New Account
+                </button>
+                <div id="account-info" class="account-info hidden">
+                    <h3>Account Details</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Address:</label>
+                            <span id="account-address" class="mono"></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Mnemonic:</label>
+                            <span id="account-mnemonic" class="mono"></span>
+                        </div>
+                    </div>
+                    <div class="warning">
+                        <strong>⚠️ Important:</strong> This is a demo account. In a real implementation, save your mnemonic phrase securely.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Balance Monitoring Section -->
+            <section class="card" id="balance-section">
+                <h2>Balance & Transactions</h2>
+                <div class="balance-display">
+                    <div class="balance-item">
+                        <span class="label">Current Balance:</span>
+                        <span id="current-balance" class="balance">0 ATOM</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="label">Staked Amount:</span>
+                        <span id="staked-balance" class="balance">0 ATOM</span>
+                    </div>
+                </div>
+                <button id="refresh-balance-btn" class="btn btn-secondary">
+                    Refresh Balance
+                </button>
+                <button id="simulate-transfer-btn" class="btn btn-secondary" style="margin-left: 10px;">
+                    Simulate Transfer
+                </button>
+                <div id="transaction-history" class="transaction-history">
+                    <h3>Recent Transactions</h3>
+                    <div id="transactions-list"></div>
+                </div>
+            </section>
+
+            <!-- Staking Section -->
+            <section class="card" id="staking-section">
+                <h2>Staking Configuration</h2>
+                <div class="form-group">
+                    <label for="validator-address">Validator Address:</label>
+                    <input type="text" id="validator-address" placeholder="cosmosvaloper1..." value="cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj">
+                </div>
+                <div class="form-group">
+                    <label for="stake-amount">Stake Amount (ATOM):</label>
+                    <input type="number" id="stake-amount" placeholder="0.1" step="0.001" min="0.001">
+                </div>
+                <button id="stake-btn" class="btn btn-success" disabled>
+                    Stake ATOM
+                </button>
+                <div id="staking-status" class="status-message"></div>
+            </section>
+
+            <!-- Auto-Staking Toggle -->
+            <section class="card" id="auto-staking-section">
+                <h2>Auto-Staking</h2>
+                <div class="toggle-group">
+                    <label class="toggle">
+                        <input type="checkbox" id="auto-staking-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Automatically stake received ATOM</span>
+                </div>
+                <div class="form-group">
+                    <label for="auto-stake-threshold">Minimum amount to auto-stake (ATOM):</label>
+                    <input type="number" id="auto-stake-threshold" placeholder="0.1" step="0.001" min="0.001" value="0.1">
+                </div>
+            </section>
+
+            <!-- Status Section -->
+            <section class="card" id="status-section">
+                <h2>Application Status</h2>
+                <div id="status-messages" class="status-messages">
+                    <div class="status-item">
+                        <span class="status-label">Network:</span>
+                        <span class="status-value" id="network-status">Demo Mode</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Account:</span>
+                        <span class="status-value" id="account-status">Not created</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Monitoring:</span>
+                        <span class="status-value" id="monitoring-status">Inactive</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Demo Mode - Built with ❤️ for the Cosmos ecosystem</p>
+        </footer>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loading-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="spinner"></div>
+            <p id="loading-message">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Demo JavaScript -->
+    <script>
+        class CosmosHubDemo {
+            constructor() {
+                this.account = null;
+                this.address = null;
+                this.mnemonic = null;
+                this.balance = 0;
+                this.stakedBalance = 0;
+                this.autoStakingEnabled = false;
+                this.autoStakeThreshold = 0.1;
+                this.balanceMonitor = null;
+                
+                this.init();
+            }
+
+            init() {
+                this.updateStatus('network', 'Demo Mode', 'connected');
+                this.loadSavedAccount();
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.getElementById('create-account-btn').addEventListener('click', () => {
+                    this.createAccount();
+                });
+
+                document.getElementById('refresh-balance-btn').addEventListener('click', () => {
+                    this.refreshBalance();
+                });
+
+                document.getElementById('simulate-transfer-btn').addEventListener('click', () => {
+                    this.simulateTransfer();
+                });
+
+                document.getElementById('stake-btn').addEventListener('click', () => {
+                    this.stakeTokens();
+                });
+
+                document.getElementById('auto-staking-toggle').addEventListener('change', (e) => {
+                    this.autoStakingEnabled = e.target.checked;
+                    this.updateStatus('monitoring', this.autoStakingEnabled ? 'Active' : 'Inactive', 
+                                   this.autoStakingEnabled ? 'active' : 'inactive');
+                });
+
+                document.getElementById('auto-stake-threshold').addEventListener('change', (e) => {
+                    this.autoStakeThreshold = parseFloat(e.target.value) || 0.1;
+                });
+            }
+
+            createAccount() {
+                this.showLoading('Creating demo account...');
+                
+                setTimeout(() => {
+                    // Generate a demo address and mnemonic
+                    this.address = 'cosmos' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    this.mnemonic = this.generateDemoMnemonic();
+                    
+                    this.saveAccountInfo();
+                    this.displayAccountInfo();
+                    this.updateStatus('account', 'Created', 'active');
+                    
+                    this.hideLoading();
+                    this.showStatusMessage('Demo account created successfully!', 'success');
+                }, 1500);
+            }
+
+            generateDemoMnemonic() {
+                const words = [
+                    'abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract', 'absurd', 'abuse',
+                    'access', 'accident', 'account', 'accuse', 'achieve', 'acid', 'acoustic', 'acquire', 'across', 'act',
+                    'action', 'actor', 'actual', 'adapt', 'add', 'addict', 'address', 'adjust', 'admit', 'adult'
+                ];
+                
+                let mnemonic = '';
+                for (let i = 0; i < 24; i++) {
+                    mnemonic += words[Math.floor(Math.random() * words.length)];
+                    if (i < 23) mnemonic += ' ';
+                }
+                return mnemonic;
+            }
+
+            displayAccountInfo() {
+                const accountInfo = document.getElementById('account-info');
+                const addressSpan = document.getElementById('account-address');
+                const mnemonicSpan = document.getElementById('account-mnemonic');
+                
+                addressSpan.textContent = this.address;
+                mnemonicSpan.textContent = this.mnemonic;
+                
+                accountInfo.classList.remove('hidden');
+                document.getElementById('stake-btn').disabled = false;
+            }
+
+            saveAccountInfo() {
+                const accountData = {
+                    address: this.address,
+                    mnemonic: this.mnemonic,
+                    accountName: document.getElementById('account-name').value
+                };
+                localStorage.setItem('cosmosDemoAccount', JSON.stringify(accountData));
+            }
+
+            loadSavedAccount() {
+                const savedAccount = localStorage.getItem('cosmosDemoAccount');
+                if (savedAccount) {
+                    try {
+                        const accountData = JSON.parse(savedAccount);
+                        this.address = accountData.address;
+                        this.mnemonic = accountData.mnemonic;
+                        
+                        if (accountData.accountName) {
+                            document.getElementById('account-name').value = accountData.accountName;
+                        }
+                        
+                        this.displayAccountInfo();
+                        this.updateStatus('account', 'Loaded', 'active');
+                        this.refreshBalance();
+                        
+                    } catch (error) {
+                        console.error('Failed to load saved account:', error);
+                        localStorage.removeItem('cosmosDemoAccount');
+                    }
+                }
+            }
+
+            refreshBalance() {
+                if (!this.address) {
+                    this.showStatusMessage('No account available', 'error');
+                    return;
+                }
+
+                document.getElementById('current-balance').textContent = `${this.balance.toFixed(6)} ATOM`;
+                document.getElementById('staked-balance').textContent = `${this.stakedBalance.toFixed(6)} ATOM`;
+            }
+
+            simulateTransfer() {
+                if (!this.address) {
+                    this.showStatusMessage('Create an account first', 'error');
+                    return;
+                }
+
+                const transferAmount = Math.random() * 2 + 0.1; // Random amount between 0.1 and 2.1 ATOM
+                this.balance += transferAmount;
+                
+                this.addTransaction('received', transferAmount, 'Simulated ATOM transfer');
+                this.refreshBalance();
+                
+                this.showStatusMessage(`Received ${transferAmount.toFixed(6)} ATOM (simulated)`, 'success');
+                
+                // Auto-stake if enabled
+                if (this.autoStakingEnabled && transferAmount >= this.autoStakeThreshold) {
+                    setTimeout(() => {
+                        this.performStaking(transferAmount);
+                    }, 1000);
+                }
+            }
+
+            stakeTokens() {
+                if (!this.address) {
+                    this.showStatusMessage('No account available', 'error');
+                    return;
+                }
+
+                const stakeAmount = parseFloat(document.getElementById('stake-amount').value);
+                const validatorAddress = document.getElementById('validator-address').value;
+
+                if (!stakeAmount || stakeAmount <= 0) {
+                    this.showStatusMessage('Please enter a valid stake amount', 'error');
+                    return;
+                }
+
+                if (stakeAmount > this.balance) {
+                    this.showStatusMessage('Insufficient balance', 'error');
+                    return;
+                }
+
+                this.performStaking(stakeAmount, validatorAddress);
+            }
+
+            performStaking(amount, validatorAddress = null) {
+                this.showLoading('Staking ATOM tokens (demo)...');
+                
+                setTimeout(() => {
+                    this.balance -= amount;
+                    this.stakedBalance += amount;
+                    
+                    const validatorAddr = validatorAddress || 'cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj';
+                    
+                    this.hideLoading();
+                    this.showStatusMessage(`Successfully staked ${amount.toFixed(6)} ATOM (demo)`, 'success');
+                    this.addTransaction('staked', amount, `Staked to ${validatorAddr.substring(0, 20)}...`);
+                    
+                    this.refreshBalance();
+                }, 2000);
+            }
+
+            addTransaction(type, amount, description) {
+                const transactionsList = document.getElementById('transactions-list');
+                const transactionItem = document.createElement('div');
+                transactionItem.className = `transaction-item ${type}`;
+                
+                const timestamp = new Date().toLocaleTimeString();
+                transactionItem.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${description}</strong>
+                            <div style="font-size: 0.9rem; color: #666;">${timestamp}</div>
+                        </div>
+                        <div style="font-weight: 600; color: ${type === 'received' ? '#48bb78' : type === 'staked' ? '#667eea' : '#ed8936'};">
+                            ${type === 'received' ? '+' : ''}${amount.toFixed(6)} ATOM
+                        </div>
+                    </div>
+                `;
+                
+                transactionsList.insertBefore(transactionItem, transactionsList.firstChild);
+                
+                const transactions = transactionsList.children;
+                if (transactions.length > 10) {
+                    transactionsList.removeChild(transactions[transactions.length - 1]);
+                }
+            }
+
+            updateStatus(type, message, className = '') {
+                const statusElement = document.getElementById(`${type}-status`);
+                if (statusElement) {
+                    statusElement.textContent = message;
+                    statusElement.className = `status-value ${className}`;
+                }
+            }
+
+            showStatusMessage(message, type = 'info') {
+                const statusElement = document.getElementById('staking-status');
+                statusElement.textContent = message;
+                statusElement.className = `status-message ${type}`;
+                
+                setTimeout(() => {
+                    statusElement.textContent = '';
+                    statusElement.className = 'status-message';
+                }, 5000);
+            }
+
+            showLoading(message = 'Processing...') {
+                const modal = document.getElementById('loading-modal');
+                const messageElement = document.getElementById('loading-message');
+                
+                messageElement.textContent = message;
+                modal.classList.remove('hidden');
+            }
+
+            hideLoading() {
+                const modal = document.getElementById('loading-modal');
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Initialize the demo application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.cosmosDemo = new CosmosHubDemo();
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmos Hub Account Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌌 Cosmos Hub Account Manager</h1>
+            <p>Create accounts, receive ATOM, and stake automatically</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Account Creation Section -->
+            <section class="card" id="account-section">
+                <h2>Account Creation</h2>
+                <div class="form-group">
+                    <label for="account-name">Account Name:</label>
+                    <input type="text" id="account-name" placeholder="Enter account name" value="my-cosmos-account">
+                </div>
+                <button id="create-account-btn" class="btn btn-primary">
+                    Create New Account
+                </button>
+                <div id="account-info" class="account-info hidden">
+                    <h3>Account Details</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Address:</label>
+                            <span id="account-address" class="mono"></span>
+                        </div>
+                        <div class="info-item">
+                            <label>Mnemonic:</label>
+                            <span id="account-mnemonic" class="mono"></span>
+                        </div>
+                    </div>
+                    <div class="warning">
+                        <strong>⚠️ Important:</strong> Save your mnemonic phrase securely. You'll need it to access your account.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Balance Monitoring Section -->
+            <section class="card" id="balance-section">
+                <h2>Balance & Transactions</h2>
+                <div class="balance-display">
+                    <div class="balance-item">
+                        <span class="label">Current Balance:</span>
+                        <span id="current-balance" class="balance">0 ATOM</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="label">Staked Amount:</span>
+                        <span id="staked-balance" class="balance">0 ATOM</span>
+                    </div>
+                </div>
+                <button id="refresh-balance-btn" class="btn btn-secondary">
+                    Refresh Balance
+                </button>
+                <div id="transaction-history" class="transaction-history">
+                    <h3>Recent Transactions</h3>
+                    <div id="transactions-list"></div>
+                </div>
+            </section>
+
+            <!-- Staking Section -->
+            <section class="card" id="staking-section">
+                <h2>Staking Configuration</h2>
+                <div class="form-group">
+                    <label for="validator-address">Validator Address:</label>
+                    <input type="text" id="validator-address" placeholder="cosmosvaloper1..." value="cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj">
+                </div>
+                <div class="form-group">
+                    <label for="stake-amount">Stake Amount (ATOM):</label>
+                    <input type="number" id="stake-amount" placeholder="0.1" step="0.001" min="0.001">
+                </div>
+                <button id="stake-btn" class="btn btn-success" disabled>
+                    Stake ATOM
+                </button>
+                <div id="staking-status" class="status-message"></div>
+            </section>
+
+            <!-- Auto-Staking Toggle -->
+            <section class="card" id="auto-staking-section">
+                <h2>Auto-Staking</h2>
+                <div class="toggle-group">
+                    <label class="toggle">
+                        <input type="checkbox" id="auto-staking-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Automatically stake received ATOM</span>
+                </div>
+                <div class="form-group">
+                    <label for="auto-stake-threshold">Minimum amount to auto-stake (ATOM):</label>
+                    <input type="number" id="auto-stake-threshold" placeholder="0.1" step="0.001" min="0.001" value="0.1">
+                </div>
+            </section>
+
+            <!-- Status Section -->
+            <section class="card" id="status-section">
+                <h2>Application Status</h2>
+                <div id="status-messages" class="status-messages">
+                    <div class="status-item">
+                        <span class="status-label">Network:</span>
+                        <span class="status-value" id="network-status">Connecting...</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Account:</span>
+                        <span class="status-value" id="account-status">Not created</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Monitoring:</span>
+                        <span class="status-value" id="monitoring-status">Inactive</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Built with ❤️ for the Cosmos ecosystem</p>
+        </footer>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loading-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="spinner"></div>
+            <p id="loading-message">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@cosmjs/cosmjs@0.31.1/dist/cosmjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@cosmjs/crypto@0.31.1/dist/crypto.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@cosmjs/proto-signing@0.31.1/dist/proto-signing.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@cosmjs/stargate@0.31.1/dist/stargate.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 

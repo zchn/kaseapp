@@ -1,0 +1,33 @@
+{
+  "name": "cosmos-hub-manager",
+  "version": "1.0.0",
+  "description": "A frontend-only JavaScript application for creating Cosmos Hub accounts, monitoring ATOM transfers, and staking tokens",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "serve": "npx http-server -p 8000",
+    "dev": "npx live-server --port=8000"
+  },
+  "keywords": [
+    "cosmos",
+    "atom",
+    "blockchain",
+    "staking",
+    "frontend",
+    "javascript"
+  ],
+  "author": "Cosmos Hub Manager",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/cosmos-hub-manager.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
