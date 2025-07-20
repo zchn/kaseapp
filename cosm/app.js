@@ -94,7 +94,7 @@ class CosmosHubManager {
         
         try {
             // Generate a new mnemonic
-            const mnemonic = window.cosmjs.DirectSecp256k1HdWallet.generate(24);
+            const mnemonic = await window.cosmjs.DirectSecp256k1HdWallet.generate(24);
             const accountName = document.getElementById('account-name').value || 'my-cosmos-account';
             
             // Get the first account from the wallet

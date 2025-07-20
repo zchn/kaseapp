@@ -10,4 +10,13 @@ module.exports = {
     StargateClient,
     DirectSecp256k1HdWallet,
     SigningStargateClient
-}; 
+};
+
+// Also make them available globally for the app to access
+if (typeof window !== 'undefined') {
+    window.cosmjs = {
+        StargateClient,
+        DirectSecp256k1HdWallet,
+        SigningStargateClient
+    };
+} 
