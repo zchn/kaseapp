@@ -380,69 +380,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check if Cosmos SDK libraries are loaded
         if (typeof window.cosmjs === 'undefined') {
             console.error('Cosmos SDK libraries not loaded');
-            
-            // Try to load libraries manually
-            const loadLibrary = (src) => {
-                return new Promise((resolve, reject) => {
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.onload = resolve;
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
-            };
-            
-            // Try alternative CDN sources
-            const alternativeSources = [
-                'https://unpkg.com/@cosmjs/cosmjs@0.31.1/dist/cosmjs.min.js',
-                'https://cdn.jsdelivr.net/npm/@cosmjs/cosmjs@0.31.1/dist/cosmjs.min.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/cosmjs/0.31.1/cosmjs.min.js'
-            ];
-            
-            let loaded = false;
-            
-            const tryLoadLibraries = async () => {
-                for (const source of alternativeSources) {
-                    try {
-                        console.log(`Trying to load from: ${source}`);
-                        await loadLibrary(source);
-                        
-                        // Wait a moment for the library to initialize
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        
-                        if (typeof window.cosmjs !== 'undefined') {
-                            console.log('Libraries loaded successfully');
-                            loaded = true;
-                            window.cosmosManager = new CosmosHubManager();
-                            return;
-                        }
-                    } catch (error) {
-                        console.error(`Failed to load from ${source}:`, error);
-                    }
-                }
-                
-                // If all sources failed, show error
-                if (!loaded) {
-                    document.body.innerHTML = `
-                        <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                            <h1>🌌 Cosmos Hub Manager</h1>
-                            <h2>Error: Unable to Load Required Libraries</h2>
-                            <p>Please check your internet connection and try refreshing the page.</p>
-                            <p>If the problem persists, try:</p>
-                            <ul style="text-align: left; margin: 20px 0;">
-                                <li>Using a different browser</li>
-                                <li>Disabling browser extensions</li>
-                                <li>Checking your firewall settings</li>
-                            </ul>
-                            <button onclick="location.reload()" style="padding: 12px 24px; background: white; color: #667eea; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                                Refresh Page
-                            </button>
-                        </div>
-                    `;
-                }
-            };
-            
-            tryLoadLibraries();
+            document.body.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h1>🌌 Cosmos Hub Manager</h1>
+                    <h2>Error: Unable to Load Required Libraries</h2>
+                    <p>The bundled Cosmos SDK libraries could not be loaded.</p>
+                    <p>Please check that the dist/cosmos-bundle.js file exists and try refreshing the page.</p>
+                    <button onclick="location.reload()" style="padding: 12px 24px; background: white; color: #667eea; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                        Refresh Page
+                    </button>
+                </div>
+            `;
             return;
         }
         

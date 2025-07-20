@@ -6,7 +6,10 @@
   "scripts": {
     "start": "python3 -m http.server 8000",
     "serve": "npx http-server -p 8000",
-    "dev": "npx live-server --port=8000"
+    "dev": "npx live-server --port=8000",
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development",
+    "watch": "webpack --mode=development --watch"
   },
   "keywords": [
     "cosmos",
@@ -22,10 +25,27 @@
     "type": "git",
     "url": "https://github.com/yourusername/cosmos-hub-manager.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@cosmjs/stargate": "^0.34.0",
+    "@cosmjs/crypto": "^0.34.0",
+    "@cosmjs/proto-signing": "^0.34.0"
+  },
   "devDependencies": {
     "http-server": "^14.1.1",
-    "live-server": "^1.2.2"
+    "live-server": "^1.2.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "babel-loader": "^9.1.3",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "crypto-browserify": "^3.12.0",
+    "stream-browserify": "^3.0.0",
+    "buffer": "^6.0.3",
+    "util": "^0.12.5",
+    "assert": "^2.1.0",
+    "path-browserify": "^1.0.1",
+    "os-browserify": "^0.3.0",
+    "process": "^0.11.10"
   },
   "engines": {
     "node": ">=14.0.0"
