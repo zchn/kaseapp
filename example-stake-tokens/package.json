@@ -1,0 +1,43 @@
+{
+  "name": "@hyperweb/stake-tokens",
+  "version": "2.4.6",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chain-registry/types": "^0.50.18",
+    "@interchain-kit/core": "0.2.222",
+    "@interchain-kit/keplr-extension": "0.2.222",
+    "@interchain-kit/leap-extension": "0.2.222",
+    "@interchain-kit/react": "0.2.222",
+    "@interchain-ui/react": "^1.26.3",
+    "@interchain-ui/react-no-ssr": "^0.1.6",
+    "@interchainjs/cosmos": "1.11.2",
+    "@interchainjs/cosmos-types": "1.11.2",
+    "@interchainjs/react": "1.11.2",
+    "@tanstack/react-query": "4.32.0",
+    "bignumber.js": "9.1.1",
+    "chain-registry": "^1.69.32",
+    "fast-fuzzy": "1.12.0",
+    "interchain-kit": "0.2.222",
+    "match-sorter": "^6.3.3",
+    "next": "^13",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-icons": "4.6.0"
+  },
+  "devDependencies": {
+    "@tanstack/react-query-devtools": "4.32.0",
+    "@types/node": "^20.14.6",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "8.56.0",
+    "eslint-config-next": "14.1.0",
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "yarn@4.3.0"
+}
