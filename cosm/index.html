@@ -15,16 +15,38 @@
         </header>
 
         <main class="main-content">
-            <!-- Account Creation Section -->
+            <!-- Account Management Section -->
             <section class="card" id="account-section">
-                <h2>Account Creation</h2>
-                <div class="form-group">
-                    <label for="account-name">Account Name:</label>
-                    <input type="text" id="account-name" placeholder="Enter account name" value="my-cosmos-account">
+                <h2>Account Management</h2>
+                
+                <!-- Account Creation -->
+                <div class="account-option">
+                    <h3>Create New Account</h3>
+                    <div class="form-group">
+                        <label for="account-name">Account Name:</label>
+                        <input type="text" id="account-name" placeholder="Enter account name" value="my-cosmos-account">
+                    </div>
+                    <button id="create-account-btn" class="btn btn-primary">
+                        Create New Account
+                    </button>
                 </div>
-                <button id="create-account-btn" class="btn btn-primary">
-                    Create New Account
-                </button>
+                
+                <!-- Account Import -->
+                <div class="account-option">
+                    <h3>Import Existing Account</h3>
+                    <div class="form-group">
+                        <label for="import-mnemonic">Mnemonic Phrase:</label>
+                        <textarea id="import-mnemonic" placeholder="Enter your 12, 15, 18, 21, or 24 word mnemonic phrase" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="import-account-name">Account Name (optional):</label>
+                        <input type="text" id="import-account-name" placeholder="Enter account name">
+                    </div>
+                    <button id="import-account-btn" class="btn btn-secondary">
+                        Import Account
+                    </button>
+                </div>
+                
                 <div id="account-info" class="account-info hidden">
                     <h3>Account Details</h3>
                     <div class="info-grid">

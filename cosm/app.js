@@ -60,6 +60,11 @@ class CosmosHubManager {
             this.createAccount();
         });
 
+        // Account import
+        document.getElementById('import-account-btn').addEventListener('click', () => {
+            this.importAccount();
+        });
+
         // Balance refresh
         document.getElementById('refresh-balance-btn').addEventListener('click', () => {
             this.refreshBalance();
@@ -131,6 +136,64 @@ class CosmosHubManager {
         }
     }
 
+    async importAccount() {
+        this.showLoading('Importing Cosmos Hub account...');
+        
+        try {
+            const mnemonicInput = document.getElementById('import-mnemonic').value.trim();
+            const accountName = document.getElementById('import-account-name').value || 'imported-account';
+            
+            if (!mnemonicInput) {
+                throw new Error('Please enter a mnemonic phrase');
+            }
+            
+            // Validate mnemonic format (should be 12, 15, 18, 21, or 24 words)
+            const words = mnemonicInput.split(/\s+/).filter(word => word.length > 0);
+            if (![12, 15, 18, 21, 24].includes(words.length)) {
+                throw new Error('Mnemonic phrase must be 12, 15, 18, 21, or 24 words');
+            }
+            
+            // Derive authentication objects using InterchainJS
+            const [auth] = window.interchainjs.Secp256k1Auth.fromMnemonic(mnemonicInput, [
+                window.interchainjs.HDPath.cosmos(0, 0, 0).toString(),
+            ]);
+            
+            // Get the wallet address
+            const address = await auth.getAddress();
+            
+            this.mnemonic = mnemonicInput;
+            this.address = address;
+            this.auth = auth;
+            
+            // Update account name for imported account
+            document.getElementById('account-name').value = accountName;
+            
+            // Save account info to localStorage
+            this.saveAccountInfo();
+            
+            // Update UI
+            this.displayAccountInfo();
+            this.updateStatus('account', 'Imported', 'active');
+            
+            this.hideLoading();
+            this.showStatusMessage('Account imported successfully!', 'success');
+            
+            // Clear import form
+            document.getElementById('import-mnemonic').value = '';
+            document.getElementById('import-account-name').value = '';
+            
+            // Start monitoring if auto-staking is enabled
+            if (this.autoStakingEnabled) {
+                this.startBalanceMonitoring();
+            }
+            
+        } catch (error) {
+            this.hideLoading();
+            this.showStatusMessage(`Failed to import account: ${error.message}`, 'error');
+            console.error('Account import error:', error);
+        }
+    }
+
     displayAccountInfo() {
         const accountInfo = document.getElementById('account-info');
         const addressSpan = document.getElementById('account-address');
@@ -149,7 +212,8 @@ class CosmosHubManager {
         const accountData = {
             address: this.address,
             mnemonic: this.mnemonic,
-            accountName: document.getElementById('account-name').value
+            accountName: document.getElementById('account-name').value,
+            isImported: this.mnemonic && this.mnemonic.split(/\s+/).length >= 12
         };
         localStorage.setItem('cosmosAccount', JSON.stringify(accountData));
     }
