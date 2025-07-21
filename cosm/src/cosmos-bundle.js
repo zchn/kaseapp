@@ -1,22 +1,35 @@
-// Cosmos SDK Bundle Entry Point
-// This file exports all the necessary Cosmos SDK modules used by the application
+// InterchainJS Bundle Entry Point
+// This file exports all the necessary InterchainJS modules used by the application
 
-const { StargateClient } = require('@cosmjs/stargate');
-const { DirectSecp256k1HdWallet } = require('@cosmjs/proto-signing');
-const { SigningStargateClient } = require('@cosmjs/stargate');
+const { DirectSigner } = require('@interchainjs/cosmos/signers/direct');
+const { AminoSigner } = require('@interchainjs/cosmos/signers/amino');
+const { Secp256k1Auth } = require('@interchainjs/auth/secp256k1');
+const { HDPath } = require('@interchainjs/types/hdpath');
+const { Bip39, Random } = require('@interchainjs/crypto');
+const { toEncoders, toConverters } = require('@interchainjs/cosmos/utils');
 
 // Export all the modules that the app uses
 module.exports = {
-    StargateClient,
-    DirectSecp256k1HdWallet,
-    SigningStargateClient
+    DirectSigner,
+    AminoSigner,
+    Secp256k1Auth,
+    HDPath,
+    Bip39,
+    Random,
+    toEncoders,
+    toConverters
 };
 
 // Also make them available globally for the app to access
 if (typeof window !== 'undefined') {
-    window.cosmjs = {
-        StargateClient,
-        DirectSecp256k1HdWallet,
-        SigningStargateClient
+    window.interchainjs = {
+        DirectSigner,
+        AminoSigner,
+        Secp256k1Auth,
+        HDPath,
+        Bip39,
+        Random,
+        toEncoders,
+        toConverters
     };
 } 

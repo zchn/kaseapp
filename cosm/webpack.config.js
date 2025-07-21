@@ -19,7 +19,8 @@ module.exports = {
       "assert": require.resolve("assert"),
       "fs": false,
       "path": require.resolve("path-browserify"),
-      "os": require.resolve("os-browserify/browser")
+      "os": require.resolve("os-browserify/browser"),
+      "vm": require.resolve("vm-browserify")
     }
   },
   module: {

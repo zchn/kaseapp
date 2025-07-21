@@ -26,9 +26,10 @@
     "url": "https://github.com/yourusername/cosmos-hub-manager.git"
   },
   "dependencies": {
-    "@cosmjs/stargate": "^0.34.0",
-    "@cosmjs/crypto": "^0.34.0",
-    "@cosmjs/proto-signing": "^0.34.0"
+    "@interchainjs/cosmos": "^1.11.18",
+    "@interchainjs/auth": "^1.11.18",
+    "@interchainjs/cosmos-types": "^1.11.18",
+    "@interchainjs/crypto": "^1.11.18"
   },
   "devDependencies": {
     "http-server": "^14.1.1",
@@ -45,7 +46,8 @@
     "assert": "^2.1.0",
     "path-browserify": "^1.0.1",
     "os-browserify": "^0.3.0",
-    "process": "^0.11.10"
+    "process": "^0.11.10",
+    "vm-browserify": "^1.1.2"
   },
   "engines": {
     "node": ">=14.0.0"

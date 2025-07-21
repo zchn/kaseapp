@@ -46,11 +46,11 @@ class CosmosHubManager {
 
     async initializeClient() {
         try {
-            // Create a Stargate client for Cosmos Hub
-            this.client = await window.cosmjs.StargateClient.connect(this.config.rpcEndpoint);
-            console.log('Connected to Cosmos Hub');
+            // Initialize InterchainJS client for Cosmos Hub
+            // We'll create the signer when we have an account
+            console.log('InterchainJS client initialized');
         } catch (error) {
-            throw new Error(`Failed to connect to Cosmos Hub: ${error.message}`);
+            throw new Error(`Failed to initialize InterchainJS client: ${error.message}`);
         }
     }
 
@@ -93,17 +93,21 @@ class CosmosHubManager {
         this.showLoading('Creating new Cosmos Hub account...');
         
         try {
-            // Generate a new mnemonic
-            const mnemonic = await window.cosmjs.DirectSecp256k1HdWallet.generate(24);
+            // Generate a new mnemonic using InterchainJS
+            const mnemonic = window.interchainjs.Bip39.encode(window.interchainjs.Random.getBytes(16)).toString();
             const accountName = document.getElementById('account-name').value || 'my-cosmos-account';
             
-            // Get the first account from the wallet
-            const accounts = await mnemonic.getAccounts();
-            const account = accounts[0];
+            // Derive authentication objects using InterchainJS
+            const [auth] = window.interchainjs.Secp256k1Auth.fromMnemonic(mnemonic, [
+                window.interchainjs.HDPath.cosmos(0, 0, 0).toString(),
+            ]);
             
-            this.mnemonic = mnemonic.mnemonic;
-            this.address = account.address;
-            this.account = account;
+            // Get the wallet address
+            const address = await auth.getAddress();
+            
+            this.mnemonic = mnemonic;
+            this.address = address;
+            this.auth = auth;
             
             // Save account info to localStorage
             this.saveAccountInfo();
@@ -163,10 +167,11 @@ class CosmosHubManager {
                     document.getElementById('account-name').value = accountData.accountName;
                 }
                 
-                // Recreate wallet from mnemonic
-                const wallet = await window.cosmjs.DirectSecp256k1HdWallet.fromMnemonic(this.mnemonic);
-                const accounts = await wallet.getAccounts();
-                this.account = accounts[0];
+                // Recreate auth from mnemonic using InterchainJS
+                const [auth] = window.interchainjs.Secp256k1Auth.fromMnemonic(this.mnemonic, [
+                    window.interchainjs.HDPath.cosmos(0, 0, 0).toString(),
+                ]);
+                this.auth = auth;
                 
                 this.displayAccountInfo();
                 this.updateStatus('account', 'Loaded', 'active');
@@ -188,7 +193,17 @@ class CosmosHubManager {
         }
 
         try {
-            const balance = await this.client.getBalance(this.address, 'uatom');
+            // Create a DirectSigner for balance queries using InterchainJS
+            const encoders = window.interchainjs.toEncoders();
+            const signer = new window.interchainjs.DirectSigner(
+                this.auth, 
+                encoders, 
+                this.config.rpcEndpoint, 
+                { prefix: 'cosmos' }
+            );
+            
+            // Get balance using the signer's RPC client
+            const balance = await signer.getBalance(this.address, 'uatom');
             const atomBalance = parseFloat(balance.amount) / 1000000; // Convert from uatom to ATOM
             
             document.getElementById('current-balance').textContent = `${atomBalance.toFixed(6)} ATOM`;
@@ -243,14 +258,13 @@ class CosmosHubManager {
         this.showLoading('Staking ATOM tokens...');
         
         try {
-            // In a real implementation, this would create and broadcast a staking transaction
-            // For demo purposes, we'll simulate the process
-            
-            // Create signing client
-            const wallet = await window.cosmjs.DirectSecp256k1HdWallet.fromMnemonic(this.mnemonic);
-            const signingClient = await window.cosmjs.SigningStargateClient.connectWithSigner(
-                this.config.rpcEndpoint,
-                wallet
+            // Create DirectSigner for staking transaction using InterchainJS
+            const encoders = window.interchainjs.toEncoders();
+            const signer = new window.interchainjs.DirectSigner(
+                this.auth, 
+                encoders, 
+                this.config.rpcEndpoint, 
+                { prefix: 'cosmos' }
             );
             
             // Prepare staking message
@@ -271,11 +285,19 @@ class CosmosHubManager {
                 }
             };
             
-            // Simulate transaction (in real implementation, this would broadcast)
-            console.log('Staking transaction prepared:', delegateMsg);
+            // Set fee and memo
+            const fee = {
+                amount: [{ denom: 'uatom', amount: '5000' }],
+                gas: '200000',
+            };
             
-            // Simulate delay for transaction processing
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Sign and broadcast the transaction
+            const result = await signer.signAndBroadcast([delegateMsg], {
+                fee,
+                memo: 'staking transaction'
+            });
+            
+            console.log('Staking transaction hash:', result.hash);
             
             this.hideLoading();
             this.showStatusMessage(`Successfully staked ${amount.toFixed(6)} ATOM`, 'success');
