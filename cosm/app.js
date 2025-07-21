@@ -343,7 +343,7 @@ class CosmosHubManager {
                 amount: Math.floor(amount * 1000000).toString() // Convert to uatom
             };
             
-            const validatorAddr = validatorAddress || 'cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj';
+            const validatorAddr = validatorAddress || 'cosmosvaloper1clpqr4nrk4khgkxj78fcwwh6dl3uw4epsluffn';
             
             // Create delegate message
             const delegateMsg = {

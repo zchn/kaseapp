@@ -76,7 +76,7 @@
                 <h2>Staking Configuration</h2>
                 <div class="form-group">
                     <label for="validator-address">Validator Address:</label>
-                    <input type="text" id="validator-address" placeholder="cosmosvaloper1..." value="cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj">
+                    <input type="text" id="validator-address" placeholder="cosmosvaloper1..." value="cosmosvaloper1clpqr4nrk4khgkxj78fcwwh6dl3uw4epsluffn">
                 </div>
                 <div class="form-group">
                     <label for="stake-amount">Stake Amount (ATOM):</label>
@@ -324,7 +324,7 @@
                     this.balance -= amount;
                     this.stakedBalance += amount;
                     
-                    const validatorAddr = validatorAddress || 'cosmosvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj';
+                    const validatorAddr = validatorAddress || 'cosmosvaloper1clpqr4nrk4khgkxj78fcwwh6dl3uw4epsluffn';
                     
                     this.hideLoading();
                     this.showStatusMessage(`Successfully staked ${amount.toFixed(6)} ATOM (demo)`, 'success');
