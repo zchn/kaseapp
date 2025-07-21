@@ -107,8 +107,9 @@ class CosmosHubManager {
                 window.interchainjs.HDPath.cosmos(0, 0, 0).toString(),
             ]);
             
-            // Get the wallet address
-            const address = await auth.getAddress();
+            // Create cosmos account to get the address
+            const account = new window.interchainjs.CosmosAccount('cosmos', auth);
+            const address = account.getAddress();
             
             this.mnemonic = mnemonic;
             this.address = address;
@@ -158,8 +159,9 @@ class CosmosHubManager {
                 window.interchainjs.HDPath.cosmos(0, 0, 0).toString(),
             ]);
             
-            // Get the wallet address
-            const address = await auth.getAddress();
+            // Create cosmos account to get the address
+            const account = new window.interchainjs.CosmosAccount('cosmos', auth);
+            const address = account.getAddress();
             
             this.mnemonic = mnemonicInput;
             this.address = address;
