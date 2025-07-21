@@ -8,6 +8,7 @@ const { HDPath } = require('@interchainjs/types/hdpath');
 const { CosmosAccount } = require('@interchainjs/cosmos/types/signer');
 const { Bip39, Random } = require('@interchainjs/crypto');
 const { toEncoders, toConverters } = require('@interchainjs/cosmos/utils');
+const { getBalance } = require('@interchainjs/cosmos-types/cosmos/bank/v1beta1/query.rpc.func');
 
 // Export all the modules that the app uses
 module.exports = {
@@ -19,7 +20,8 @@ module.exports = {
     Bip39,
     Random,
     toEncoders,
-    toConverters
+    toConverters,
+    getBalance
 };
 
 // Also make them available globally for the app to access
@@ -33,6 +35,7 @@ if (typeof window !== 'undefined') {
         Bip39,
         Random,
         toEncoders,
-        toConverters
+        toConverters,
+        getBalance
     };
 } 

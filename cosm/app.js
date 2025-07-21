@@ -268,9 +268,13 @@ class CosmosHubManager {
                 { prefix: 'cosmos' }
             );
             
-            // Get balance using the signer's RPC client
-            const balance = await signer.getBalance(this.address, 'uatom');
-            const atomBalance = parseFloat(balance.amount) / 1000000; // Convert from uatom to ATOM
+            // Get balance using the signer's query client and bank query function
+            const balanceResponse = await window.interchainjs.getBalance(signer.queryClient.txRpc, {
+                address: this.address,
+                denom: 'uatom'
+            });
+            
+            const atomBalance = parseFloat(balanceResponse.balance?.amount || '0') / 1000000; // Convert from uatom to ATOM
             
             document.getElementById('current-balance').textContent = `${atomBalance.toFixed(6)} ATOM`;
             
