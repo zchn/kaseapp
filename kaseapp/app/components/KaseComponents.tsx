@@ -305,7 +305,7 @@ function DebugCard() {
   });
 
   // Get assets filtered by Base's chain ID
-  const [assetsList, setAssetsList] = useState<Array<{ assetName: string, assetSymbol: string}>>([])
+  const [assetsList, setAssetsList] = useState<Array<{ chainId: string, assetName: string, assetSymbol: string}>>([])
   assets({
     chainIds: ["8453"],
   }).then((assetsData) => {
@@ -314,6 +314,7 @@ function DebugCard() {
       // Convert the Record<string, Asset[]> to our expected format
       const flattenedAssets = Object.entries(assetsData).flatMap(([chainId, assets]) =>
         assets.map(asset => ({
+          chainId: chainId,
           assetName: asset.name || "",
           assetSymbol: asset.symbol || "",
         }))
