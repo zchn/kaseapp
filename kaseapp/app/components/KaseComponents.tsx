@@ -16,6 +16,8 @@ import {
   TransactionStatus,
 } from "@coinbase/onchainkit/transaction";
 import { useNotification } from "@coinbase/onchainkit/minikit";
+import { chains, assets } from "@skip-go/client";
+
 
 type ButtonProps = {
   children: ReactNode;
@@ -115,7 +117,7 @@ type HomeProps = {
   setActiveTab: (tab: string) => void;
 };
 
-export function Home({ setActiveTab }: HomeProps) {
+export function Home({ }: HomeProps) {
   return (
     <div className="space-y-6 animate-fade-in">
       <SkipCard />
@@ -287,13 +289,50 @@ function SkipCard() {
 }
 
 function DebugCard() {
+  console.log("DebugCard");
+  // Get all supported chains, including EVM and SVM chains
+  const [allChains, setAllChains] = useState<Array<{ chainName: string; chainId: string; prettyName: string }>>([])
+  chains({
+    includeEvm: true,
+    includeSvm: true, 
+  }).then((chains) => {
+    console.log("chains", chains);
+    if (chains) {
+      setAllChains(chains);
+    }
+  }).catch((error) => {
+    console.error("Error fetching chains:", error);
+  });
+
+  // Get assets filtered by Base's chain ID
+  const [assetsList, setAssetsList] = useState<Array<{ assetName: string, assetSymbol: string}>>([])
+  assets({
+    chainIds: ["8453"],
+  }).then((assetsData) => {
+    console.log("assetsData", assetsData);
+    if (assetsData) {
+      // Convert the Record<string, Asset[]> to our expected format
+      const flattenedAssets = Object.entries(assetsData).flatMap(([chainId, assets]) =>
+        assets.map(asset => ({
+          assetName: asset.name || "",
+          assetSymbol: asset.symbol || "",
+        }))
+      );
+      setAssetsList(flattenedAssets);
+    }
+  }).catch((error) => {
+    console.error("Error fetching assets:", error);
+  });
 
   return (
     <Card title="Debug Card">
       <div className="space-y-4">
-        <p className="text-[var(--app-foreground-muted)] mb-4">
-          Hello world!
-        </p>
+                  <p className="text-[var(--app-foreground-muted)] mb-4">
+            Skip Go Supported Chains: {allChains.map((chain) => chain.chainName).join(", ")}
+          </p>
+          <p className="text-[var(--app-foreground-muted)] mb-4">
+            Base Assets: {assetsList.map((asset) => asset.assetName).join(", ")}
+          </p>
       </div>
     </Card>
   );

@@ -91,8 +91,8 @@ The app is wrapped with `MiniKitProvider` in `providers.tsx`, configured with:
 
 To get started building your own frame, follow these steps:
 
-1. Remove the DemoComponents:
-   - Delete `components/DemoComponents.tsx`
+1. Remove the KaseComponents:
+   - Delete `components/KaseComponents.tsx`
    - Remove demo-related imports from `page.tsx`
 
 2. Start building your Frame:
