@@ -1,7 +1,8 @@
 "use client";
 
-import { type ReactNode, useCallback, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useMemo, useState, useEffect } from "react";
 import { useAccount } from "wagmi";
+import { setApiOptions, route } from '@skip-go/client';
 import {
   Transaction,
   TransactionButton,
@@ -16,7 +17,6 @@ import {
   TransactionStatus,
 } from "@coinbase/onchainkit/transaction";
 import { useNotification } from "@coinbase/onchainkit/minikit";
-import { chains, assets } from "@skip-go/client";
 
 
 type ButtonProps = {
@@ -229,6 +229,8 @@ export function Icon({ name, size = "md", className = "" }: IconProps) {
 function SkipCard() {
   const { address } = useAccount();
 
+  const kzCosmosAddress = "cosmos1m6jcfrt8hnzq46f67986p3c5cyu779qcxg606l";
+
   // Example transaction call - sending 0 ETH to self
   const buyAtomCalls = useMemo(() => address
     ? [
@@ -254,7 +256,7 @@ function SkipCard() {
   }, [sendNotification]);
 
   return (
-    <Card title="Buy 10 ATOMs">
+    <Card title={`Swap 0.0003 ETH on Base to ATOM on Cosmos Hub and send to ${kzCosmosAddress}`}>
       <div className="space-y-4">
 
         <div className="flex flex-col items-center">
@@ -289,50 +291,52 @@ function SkipCard() {
 }
 
 function DebugCard() {
-  console.log("DebugCard");
-  // Get all supported chains, including EVM and SVM chains
-  const [allChains, setAllChains] = useState<Array<{ chainName: string; chainId: string; prettyName: string }>>([])
-  chains({
-    includeEvm: true,
-    includeSvm: true, 
-  }).then((chains) => {
-    console.log("chains", chains);
-    if (chains) {
-      setAllChains(chains);
+  const [setApiOptionsCalled, setSetApiOptionsCalled] = useState(false);
+  useEffect(() => {
+    if (!setApiOptionsCalled) {
+      setApiOptions({});
+      setSetApiOptionsCalled(true);
     }
-  }).catch((error) => {
-    console.error("Error fetching chains:", error);
-  });
+  }, []);
 
-  // Get assets filtered by Base's chain ID
-  const [assetsList, setAssetsList] = useState<Array<{ chainId: string, assetName: string, assetSymbol: string}>>([])
-  assets({
-    chainIds: ["8453"],
-  }).then((assetsData) => {
-    console.log("assetsData", assetsData);
-    if (assetsData) {
-      // Convert the Record<string, Asset[]> to our expected format
-      const flattenedAssets = Object.entries(assetsData).flatMap(([chainId, assets]) =>
-        assets.map(asset => ({
-          chainId: chainId,
-          assetName: asset.name || "",
-          assetSymbol: asset.symbol || "",
-        }))
-      );
-      setAssetsList(flattenedAssets);
-    }
-  }).catch((error) => {
-    console.error("Error fetching assets:", error);
-  });
+  // Getting a route from ETH on Base to stATOM on Base
+  const [theRoute, setTheRoute] = useState<{obj: any, chainIds: Array<string>, estimatedAmountOut: string, usdAmountIn: string, usdAmountOut: string} | undefined>(undefined)
+  useEffect(() => {
+    if (!setApiOptionsCalled) return;
+    if (theRoute) return;
+    const fromAmountInEth = 0.0003;
+    const fromAmountInWei = fromAmountInEth * 10 ** 18;
+    route({
+      sourceAssetDenom: "base-native",
+      sourceAssetChainId: "8453",
+      amountIn: fromAmountInWei.toString(),
+      destAssetDenom: "uatom",
+      destAssetChainId: "cosmoshub-4",
+      smartRelay: true,
+      smartSwapOptions: {
+        evmSwaps: true
+      },
+    }).then((result) => {
+      console.log("result", result);
+      if (result) {
+        setTheRoute({
+          obj: result,
+          chainIds: result.chainIds,
+          estimatedAmountOut: result.estimatedAmountOut,
+          usdAmountIn: result.usdAmountIn || "0",
+          usdAmountOut: result.usdAmountOut || "0",
+        });
+      }
+    }).catch((error) => {
+      console.error("Error fetching route:", error);
+    })
+  }, [setApiOptionsCalled]);
 
   return (
     <Card title="Debug Card">
       <div className="space-y-4">
-                  <p className="text-[var(--app-foreground-muted)] mb-4">
-            Skip Go Supported Chains: {allChains.map((chain) => chain.chainName).join(", ")}
-          </p>
           <p className="text-[var(--app-foreground-muted)] mb-4">
-            Base Assets: {assetsList.map((asset) => asset.assetName).join(", ")}
+            Route: {theRoute ? JSON.stringify(theRoute, ["chainIds", "estimatedAmountOut", "usdAmountIn", "usdAmountOut"], "\n") : "Not found"}
           </p>
       </div>
     </Card>
