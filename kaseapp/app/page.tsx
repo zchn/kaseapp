@@ -19,6 +19,7 @@ import {
   WalletDropdownDisconnect,
 } from "@coinbase/onchainkit/wallet";
 import { useEffect, useMemo, useState, useCallback } from "react";
+import { Analytics } from "@vercel/analytics/next"
 import { Button } from "./components/KaseComponents";
 import { Icon } from "./components/KaseComponents";
 import { Home } from "./components/KaseComponents";
@@ -99,14 +100,7 @@ export default function App() {
         </main>
 
         <footer className="mt-2 pt-4 flex justify-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[var(--ock-text-foreground-muted)] text-xs"
-            onClick={() => openUrl("https://base.org/builders/minikit")}
-          >
-            Built on Base with MiniKit
-          </Button>
+          <Analytics/>
         </footer>
       </div>
     </div>
