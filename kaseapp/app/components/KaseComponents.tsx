@@ -297,10 +297,10 @@ function DebugCard() {
       setApiOptions({});
       setSetApiOptionsCalled(true);
     }
-  }, []);
+  }, [setApiOptionsCalled]);
 
   // Getting a route from ETH on Base to stATOM on Base
-  const [theRoute, setTheRoute] = useState<{obj: any, chainIds: Array<string>, estimatedAmountOut: string, usdAmountIn: string, usdAmountOut: string} | undefined>(undefined)
+  const [theRoute, setTheRoute] = useState<{obj: object, chainIds: Array<string>, estimatedAmountOut: string, usdAmountIn: string, usdAmountOut: string} | undefined>(undefined)
   useEffect(() => {
     if (!setApiOptionsCalled) return;
     if (theRoute) return;
@@ -330,7 +330,7 @@ function DebugCard() {
     }).catch((error) => {
       console.error("Error fetching route:", error);
     })
-  }, [setApiOptionsCalled]);
+  }, [setApiOptionsCalled, theRoute]);
 
   return (
     <Card title="Debug Card">
